@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeReportsApplication.DapperORM\EmployeeReportsApplication.DapperORM.csproj" />
+    <ProjectReference Include="..\EmployeeReportsApplication.PersistanceLayer\EmployeeReportsApplication.PersistanceLayer.csproj" />
+    <ProjectReference Include="..\EmployeeReportsApplication.WatcherService\EmployeeReportsApplication.WatcherService.csproj" />
+  </ItemGroup>
+
+</Project>

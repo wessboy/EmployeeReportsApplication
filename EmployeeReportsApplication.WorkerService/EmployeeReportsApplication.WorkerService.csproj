@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-EmployeeReportsApplication.WorkerService-0518eb37-d1a4-47f4-b85d-72e0eb3ab955</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeReportsApplication.BusinessLayer\EmployeeReportsApplication.BusinessLayer.csproj" />
+    <ProjectReference Include="..\EmployeeReportsApplication.DapperORM\EmployeeReportsApplication.DapperORM.csproj" />
+    <ProjectReference Include="..\EmployeeReportsApplication.PersistanceLayer\EmployeeReportsApplication.PersistanceLayer.csproj" />
+    <ProjectReference Include="..\EmployeeReportsApplication.WatcherService\EmployeeReportsApplication.WatcherService.csproj" />
+  </ItemGroup>
+</Project>
