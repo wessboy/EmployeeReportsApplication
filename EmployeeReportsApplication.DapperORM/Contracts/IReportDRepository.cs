@@ -15,5 +15,6 @@ namespace EmployeeReportsApplication.DapperORM.Contracts;
        Report? FindOne(string tableName,string employeeName);
        IEnumerable<Report> FindAll(string tableName);
        void CreateTable(string tableName);
+    void CreateDatabase();
     }
 

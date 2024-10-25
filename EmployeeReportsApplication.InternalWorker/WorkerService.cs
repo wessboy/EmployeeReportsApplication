@@ -1,5 +1,7 @@
 ﻿using EmployeeReportsApplication.BusinessLayer.Contractors;
+using EmployeeReportsApplication.BusinessLayer.ValueObject;
 using EmployeeReportsApplication.WatcherService.Contracts;
+using EmployeeReportsApplication.WatcherService.ValueObject;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,37 +14,82 @@ namespace EmployeeReportsApplication.InternalWorker;
         private readonly ILoadService _loadService;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private ITransformationService _transformationService;
+        private IReportService _reportService;
 
         public WorkerService(ILogger<WorkerService> logger, IWatcherService watcherService, ILoadService loadService, IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
             _watcherService = watcherService;
-            _loadService = loadService;
+            
+        _loadService = loadService;
             _serviceScopeFactory = serviceScopeFactory;
-
-
-        }
-
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-
-            _watcherService.ConfigureWatcher();
-            _loadService.SubscribeToWatcher();
             using var scope = _serviceScopeFactory.CreateScope();
             _transformationService = scope.ServiceProvider.GetService<ITransformationService>()!;
-            _transformationService.SubscribeToLoader();
+
+
+    }
+
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        _watcherService.ConfigureWatcher();
+        InitalizeApplication();
+        _logger.LogInformation("Worker is running");
+
+        return base.StartAsync(cancellationToken);
+    }
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+                
+                 
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
+                await ExecutETLProcessAsync();
 
-
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(0, stoppingToken);
             }
+             
+            
         }
+
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        _watcherService.DisposeWatcher();
+        _logger.LogInformation("Process ends");
+        return base.StopAsync(cancellationToken);
+    }
+    private void InitalizeApplication()
+        {
+        using var scope = _serviceScopeFactory.CreateScope();  
+        _reportService = scope.ServiceProvider.GetService<IReportService>()!;
+        _reportService.IntializeDatabase();
+        }
+
+        private async Task ExecutETLProcessAsync()
+        {
+
+        List<DailyReport> extractedData = new List<DailyReport>();
+        
+                while(_watcherService.AddedFiles.TryDequeue(out var queuedFile))
+        {
+            try
+            {
+                CsvFileInfo addedFile = queuedFile;
+
+                extractedData = await Task.Run(() => _loadService.LoadReportFromCSVFile(addedFile.FullPath, addedFile.Name));
+                 await Task.Run(() => _transformationService.ExecuteTransformation(extractedData, addedFile));
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Error Processing File {queuedFile.Name}: {ex}");
+            }
+                    
+                }
+                
+        }
+
+
     }
 

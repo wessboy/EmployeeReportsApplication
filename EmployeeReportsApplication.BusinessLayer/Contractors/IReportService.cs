@@ -8,7 +8,7 @@ namespace EmployeeReportsApplication.BusinessLayer.Contractors
         Report? GetByName(string name);
         void AddReport(Report report);
         void UpdateReport(Report report);
-
         void UpdateTableName(string tableName);
+        void IntializeDatabase();
     }
 }

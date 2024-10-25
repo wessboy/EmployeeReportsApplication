@@ -2,6 +2,7 @@
 using EmployeeReportsApplication.BusinessLayer.Contractors;
 using EmployeeReportsApplication.BusinessLayer.ValueObject;
 using EmployeeReportsApplication.DapperORM.Entities;
+using EmployeeReportsApplication.WatcherService.ValueObject;
 using Microsoft.Extensions.Configuration;
 
 namespace EmployeeReportsApplication.BusinessLayer.Business;
@@ -115,7 +116,12 @@ namespace EmployeeReportsApplication.BusinessLayer.Business;
       {
         try
         {
-            File.Move(filePath, TreatedReportsPath + $"\\{fileName}");
+            var newFilePath = TreatedReportsPath + $"\\{fileName}";
+            if (!File.Exists(newFilePath)) 
+            {
+                File.Move(filePath, newFilePath);
+            } 
+            
         }
         catch (IOException)
         {
@@ -139,7 +145,7 @@ namespace EmployeeReportsApplication.BusinessLayer.Business;
         
     }
 
-    public void OnDailyReportLoaded(object sender, ReportLoadedArgs args)
+    /*public void OnDailyReportLoaded(object sender, ReportLoadedArgs args)
     {  
          if(IsDataValid(args.DailyReports,args.FilePath)) 
         {
@@ -153,12 +159,27 @@ namespace EmployeeReportsApplication.BusinessLayer.Business;
             MoveFileToUntreatedReportsFolder(args.FilePath,args.FileName);
         }
         
+    }*/
+
+     public void ExecuteTransformation(List<DailyReport> dailyReports,CsvFileInfo csvFileInfo)
+    {
+        if (IsDataValid(dailyReports,csvFileInfo.FullPath))
+        {
+            ExtractDateFromFileName(csvFileInfo.Name);
+            TransformDailyReportToReport(dailyReports);
+            MoveFileToTreatedReportsFolder(csvFileInfo.FullPath,csvFileInfo.Name);
+
+        }
+        else
+        {
+            MoveFileToUntreatedReportsFolder(csvFileInfo.FullPath,csvFileInfo.Name);
+        }
     }
 
-    public void SubscribeToLoader()
+    /*public void SubscribeToLoader()
     {
         _loadService.ReportLoaded += OnDailyReportLoaded;
-    }
+    }*/
 }
 
 

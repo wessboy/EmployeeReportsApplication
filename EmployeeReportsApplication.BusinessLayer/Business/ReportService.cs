@@ -63,5 +63,11 @@ public class ReportService : IReportService
     {
         _reportDRepository.CreateTable(tableName);
     }
+
+
+    public void IntializeDatabase()
+    {
+        _reportDRepository.CreateDatabase();
+    }
 }
 

@@ -1,16 +1,14 @@
-﻿using EmployeeReportsApplication.WatcherService.WatcherEventArgs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EmployeeReportsApplication.WatcherService.ValueObject;
+
 
 namespace EmployeeReportsApplication.WatcherService.Contracts
 {
      public interface IWatcherService
     {
-        void ConfigureWatcher();
+        public void ConfigureWatcher();
+        public void DisposeWatcher();
+        public Queue<CsvFileInfo> AddedFiles { get; }
 
-        public event EventHandler<CsvFileCreatedArgs> CsvFileCreated;
+        //public event EventHandler<CsvFileCreatedArgs> CsvFileCreated;
     }
 }

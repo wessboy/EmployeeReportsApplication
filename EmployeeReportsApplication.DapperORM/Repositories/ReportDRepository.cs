@@ -10,11 +10,15 @@ namespace EmployeeReportsApplication.DapperORM.Repositories;
 public class ReportDRepository : IReportDRepository
 {
     private readonly IDbConnection _dbConnection;
+    private readonly IConfiguration _configuration; 
     public ReportDRepository(IConfiguration configuration)
     {
-        _dbConnection = new NpgsqlConnection(configuration.GetConnectionString("PostgresConnection"));
+        _configuration = configuration;
+        _dbConnection = new NpgsqlConnection(_configuration.GetConnectionString("PostgresConnection"));
     }
 
+
+ 
     public void Add(string tableName, Report report)
     {
         string query = @$"INSERT INTO {tableName}(Name,OnSiteDays,RemoteDays,LeaveDays)
@@ -90,6 +94,25 @@ public class ReportDRepository : IReportDRepository
 
         return report;
 
+    }
+
+    public void CreateDatabase()
+    {
+        using var connection = new NpgsqlConnection(_configuration.GetConnectionString("IntialConnection"));
+
+        connection.Open();
+
+        var query = @"SELECT EXISTS (SELECT FROM pg_database WHERE datname = @DatabaseName)";
+        
+        var databaseExists = connection.QueryFirstOrDefault<bool>(query, new {DatabaseName = "EmployeeReportDB" });
+
+        if (!databaseExists)
+        {
+            query = @"CREATE DATABASE ""EmployeeReportDB"" OWNER postgres;";
+            connection.Execute(query);
+
+        }
+            
     }
 }
 

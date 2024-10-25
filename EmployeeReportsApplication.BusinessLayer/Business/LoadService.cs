@@ -1,13 +1,10 @@
-﻿
-
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
-using EmployeeReportsApplication.BusinessLayer.BusinessEventArgs;
 using EmployeeReportsApplication.BusinessLayer.Contractors;
 using EmployeeReportsApplication.BusinessLayer.ValueObject;
 using EmployeeReportsApplication.WatcherService.Contracts;
-using EmployeeReportsApplication.WatcherService.WatcherEventArgs;
 using System.Globalization;
+
 
 namespace EmployeeReportsApplication.BusinessLayer.Business;
      public class LoadService : ILoadService
@@ -20,7 +17,7 @@ namespace EmployeeReportsApplication.BusinessLayer.Business;
             
         }
 
-    private void LoadReportFromCSVFile(string filePath , string fileName)
+         public List<DailyReport> LoadReportFromCSVFile(string filePath , string fileName)
         {
 
             using var reader = new StreamReader(filePath);
@@ -37,7 +34,8 @@ namespace EmployeeReportsApplication.BusinessLayer.Business;
 
         reader.Close();
 
-        OnDailyReportLoaded(fileName,filePath,dailyReports); 
+         return dailyReports;   
+        //OnDailyReportLoaded(fileName,filePath,dailyReports); 
 
           
         }
@@ -52,22 +50,22 @@ namespace EmployeeReportsApplication.BusinessLayer.Business;
            return configuration;
         }
 
-       public event EventHandler<ReportLoadedArgs> ReportLoaded;
+       //public event EventHandler<ReportLoadedArgs> ReportLoaded;
 
-       protected virtual void  OnDailyReportLoaded(string fileName,string filePath,List<DailyReport> dailyReports)
+      /* protected virtual void  OnDailyReportLoaded(string fileName,string filePath,List<DailyReport> dailyReports)
       {
          ReportLoaded?.Invoke(this,new ReportLoadedArgs { FileName = fileName,FilePath = filePath,DailyReports = dailyReports });  
-      }
+      }*/
 
       
-      public void OnCsvFileCreated(object sender, CsvFileCreatedArgs args) 
+     /* public void OnCsvFileCreated(object sender, CsvFileCreatedArgs args) 
       { 
          LoadReportFromCSVFile(args.Path,args.Name);
-      }
+      }*/
 
-    public void SubscribeToWatcher()
+    /*public void SubscribeToWatcher()
     {
         _watcherService.CsvFileCreated += OnCsvFileCreated;
-    }
+    }*/
 }
 
